@@ -1,5 +1,13 @@
 const express = require('express')
+const morgan = require('morgan')
 const app = express()
+
+//app.use(morgan('tiny'))
+
+app.use(morgan(':method :url :status :res[content-length] - :response-time ms :person'))
+morgan.token('person', function(req,res) {
+  return JSON.stringify(req.body)
+})
 
 app.use(express.json())
 
@@ -53,7 +61,7 @@ app.get('/info', (request,response) =>{
 app.delete('/api/persons/:id', (request,response) => {
     const id = Number(request.params.id)
     phonebook = phonebook.filter(person => person.id !== id)
-    console.log('id', id)
+    //console.log('id', id)
 
     response.status(204).end()
 
@@ -82,12 +90,14 @@ app.post('/api/persons', (request, response) => {
     number: body.number,
     id: generateId(),
     }
-    console.log('person', person)
+    //console.log('person', person)
 
     phonebook = phonebook.concat(person)
 
     response.json(person)
 })
+
+
 const PORT = 3001
 app.listen(PORT)
 console.log(`Server running on port ${PORT}`)
