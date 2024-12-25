@@ -1,8 +1,10 @@
 const express = require('express')
 const morgan = require('morgan')
+const cors = require('cors')
 const app = express()
 
 //app.use(morgan('tiny'))
+app.use(cors())
 
 app.use(morgan(':method :url :status :res[content-length] - :response-time ms :person'))
 morgan.token('person', function(req,res) {
@@ -78,7 +80,7 @@ app.post('/api/persons', (request, response) => {
     
     if (!body.name || !body.number) {
     return response.status(400).json({ 
-        error: 'name or number missing' 
+        error: 'name or number missing!' 
     })
     } else if (phonebook.find(person => person.name == body.name)){
         return response.status(400).json({
