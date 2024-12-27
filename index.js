@@ -2,11 +2,15 @@ const express = require('express')
 const morgan = require('morgan')
 const cors = require('cors')
 const app = express()
-
 //app.use(morgan('tiny'))
+
+if (process.argv.length < 3) {
+  console.log('Please provide the password as an argument: node index.js <password>')
+  process.exit(1)
+}
+app.use(express.static('dist'))
 app.use(cors())
 
-app.use(express.static('dist'))
 
 app.use(morgan(':method :url :status :res[content-length] - :response-time ms :person'))
 morgan.token('person', function(req,res) {
