@@ -1,13 +1,20 @@
 const express = require('express')
 const morgan = require('morgan')
 const cors = require('cors')
-const app = express()
+require('dotenv').config()
+const Person = require('./models/person')
 //app.use(morgan('tiny'))
 
+
+const app = express()
+
+
+/*
 if (process.argv.length < 3) {
   console.log('Please provide the password as an argument: node index.js <password>')
   process.exit(1)
-}
+}*/
+
 app.use(express.static('dist'))
 app.use(cors())
 
@@ -19,6 +26,7 @@ morgan.token('person', function(req,res) {
 
 app.use(express.json())
 
+/*
 let phonebook = [
     { 
       "id": 1,
@@ -41,10 +49,14 @@ let phonebook = [
       "number": "39-23-6423122"
     }
 ]
-
+*/
 
 app.get('/api/persons', (request,response) => {
-    response.json(phonebook)
+    //response.json(phonebook)
+    Person.find({}).then(persons => {
+        response.json(persons)
+    })
+//    response.json(Person.find({}))
 })
 
 app.get('/api/persons/:id', (request,response) => {
@@ -106,6 +118,6 @@ app.post('/api/persons', (request, response) => {
 })
 
 
-const PORT = process.env.PORT || 3001
+const PORT = process.env.PORT
 app.listen(PORT)
 console.log(`Server running on port ${PORT}`)
