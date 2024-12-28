@@ -20,7 +20,7 @@ app.use(cors())
 
 
 app.use(morgan(':method :url :status :res[content-length] - :response-time ms :person'))
-morgan.token('person', function(req,res) {
+morgan.token('person', function (req, res) {
   return JSON.stringify(req.body)
 })
 
@@ -51,70 +51,69 @@ let phonebook = [
 ]
 */
 
-app.get('/api/persons', (request,response) => {
-    //response.json(phonebook)
-    Person.find({}).then(persons => {
-        response.json(persons)
-    })
-//    response.json(Person.find({}))
+app.get('/api/persons', (request, response) => {
+  //response.json(phonebook)
+  Person.find({}).then(persons => {
+    response.json(persons)
+  })
+  //    response.json(Person.find({}))
 })
 
-app.get('/api/persons/:id', (request,response) => {
-    const id = Number(request.params.id)
-    const person = phonebook.find(person => person.id === id)
-    if(person) {
-        response.json(person)
-    } else {
-        response.status(404).end()
+app.get('/api/persons/:id', (request, response) => {
+  Person.findById(request.params.id).then(person => {
+    response.json(person)
+  })
+    .catch(error => {
+      response.status(404).end()
     }
-    
+    )
 })
 
-app.get('/info', (request,response) =>{
-    response.send(
-        `Phonebook contains ${phonebook.length} people        <br/>
+app.get('/info', (request, response) => {
+  response.send(
+    `Phonebook contains ${phonebook.length} people        <br/>
         ${new Date().toLocaleString()}`
 
-        )
+  )
 })
 
-app.delete('/api/persons/:id', (request,response) => {
-    const id = Number(request.params.id)
-    phonebook = phonebook.filter(person => person.id !== id)
-    //console.log('id', id)
+app.delete('/api/persons/:id', (request, response) => {
+  const id = Number(request.params.id)
+  phonebook = phonebook.filter(person => person.id !== id)
+  //console.log('id', id)
 
-    response.status(204).end()
+  response.status(204).end()
 
 })
 const generateId = () => {
-    const randId = phonebook.length > 0
-      ? Math.floor(Math.random() * 100000)
-      : 0
-    return randId
-  }
-  
+  const randId = phonebook.length > 0
+    ? Math.floor(Math.random() * 100000)
+    : 0
+  return randId
+}
+
 app.post('/api/persons', (request, response) => {
-    const body = request.body
-    
-    if (!body.name || !body.number) {
-    return response.status(400).json({ 
-        error: 'name or number missing!' 
+  const body = request.body
+
+  if (!body.name || !body.number) {
+    return response.status(400).json({
+      error: 'name or number missing!'
     })
-    } else if (phonebook.find(person => person.name == body.name)){
-        return response.status(400).json({
-            error: 'name must be unique'
-        })
-    }
-    const person = {
+  } else if (phonebook.find(person => person.name == body.name)) {
+    return response.status(400).json({
+      error: 'name must be unique'
+    })
+  }
+  const person = {
     name: body.name,
     number: body.number,
     id: generateId(),
-    }
-    //console.log('person', person)
+  }
+  //console.log('person', person)
 
-    phonebook = phonebook.concat(person)
+  phonebook = phonebook.concat(person)
 
-    response.json(person)
+  response.json(person)
 })
 
 
