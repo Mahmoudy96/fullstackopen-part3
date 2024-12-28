@@ -1,7 +1,8 @@
 const express = require('express')
 const morgan = require('morgan')
 const cors = require('cors')
-require('dotenv').config()
+const dotenv = require('dotenv')
+dotenv.config({path: './.env'})
 const Person = require('./models/person')
 //app.use(morgan('tiny'))
 
@@ -70,11 +71,11 @@ app.get('/api/persons/:id', (request, response) => {
 })
 
 app.get('/info', (request, response) => {
-  response.send(
-    `Phonebook contains ${phonebook.length} people        <br/>
-        ${new Date().toLocaleString()}`
-
-  )
+  Person.find({}).then(persons => {
+    response.send(    
+      `Phonebook contains ${persons.length} people        <br/>
+      ${new Date().toLocaleString()}`)
+  })
 })
 
 app.delete('/api/persons/:id', (request, response) => {
@@ -99,21 +100,19 @@ app.post('/api/persons', (request, response) => {
     return response.status(400).json({
       error: 'name or number missing!'
     })
-  } else if (phonebook.find(person => person.name == body.name)) {
+   /*} else if (Person.findById(body.id)) {
     return response.status(400).json({
       error: 'name must be unique'
+    })*/
+  }
+  const person = new Person({
+      name: body.name,
+      number: body.number,  
     })
-  }
-  const person = {
-    name: body.name,
-    number: body.number,
-    id: generateId(),
-  }
   //console.log('person', person)
-
-  phonebook = phonebook.concat(person)
-
-  response.json(person)
+  person.save().then(savedPerson => {
+    response.json(savedPerson)
+  })
 })
 
 
