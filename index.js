@@ -84,9 +84,10 @@ app.get('/info', (request, response) => {
   })
 })
 
-app.delete('/api/persons/:id', (request, response) => {
+app.delete('/api/persons/:id', (request, response,next) => {
   Person.findByIdAndDelete(request.params.id).then(() => {
     response.status(204).end()
+    .catch(error => next(error))
   })
 }
 )
@@ -113,7 +114,7 @@ app.put('/api/persons/:id', (request, response,next) => {
     .catch(error => next(error))
 })
 
-app.post('/api/persons', (request, response) => {
+app.post('/api/persons', (request, response,next) => {
   const body = request.body
 
   if (!body.name || !body.number) {
@@ -132,8 +133,10 @@ app.post('/api/persons', (request, response) => {
   //console.log('person', person)
   person.save().then(savedPerson => {
     response.json(savedPerson)
-  })
+  }).catch(error => next(error))
 })
+
+
 const errorHandler = (error, request, response, next) => {
   console.error(error.message)
 
@@ -145,6 +148,8 @@ const errorHandler = (error, request, response, next) => {
 }
 
 app.use(errorHandler)
+
+
 const PORT = process.env.PORT
 app.listen(PORT)
 console.log(`Server running on port ${PORT}`)
