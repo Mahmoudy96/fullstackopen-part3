@@ -52,12 +52,10 @@ let phonebook = [
 ]
 */
 
-app.get('/api/persons', (request, response) => {
-  //response.json(phonebook)
+app.get('/api/persons', (request, response,next) => {
   Person.find({}).then(persons => {
     response.json(persons)
-  })
-  //    response.json(Person.find({}))
+  }).catch(error => next(error))
 })
 
 app.get('/api/persons/:id', (request, response,next) => {
@@ -72,12 +70,12 @@ app.get('/api/persons/:id', (request, response,next) => {
     .catch(error => next(error))
 })
 
-app.get('/info', (request, response) => {
+app.get('/info', (request, response,next) => {
   Person.find({}).then(persons => {
     response.send(    
       `Phonebook contains ${persons.length} people        <br/>
       ${new Date().toLocaleString()}`)
-  })
+  }).catch(error => next(error))
 })
 
 app.delete('/api/persons/:id', (request, response,next) => {
